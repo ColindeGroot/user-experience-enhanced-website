@@ -1,0 +1,21 @@
+{% render 'partials/head.liquid'%}
+
+<div class="radio-intro">
+    <h1>Radiostations</h1>
+    <p>Kies een radiostation</p>
+</div>
+
+{% for radiostation in radiostations %}
+<ul class="radiostations">
+    <li class="station-item"> 
+        <a href="/radio/{{ radiostation.name | url_encode | replace: '+', '%20' }}">
+
+            <h2>{{ radiostation.name }}</h2>
+            <img src="https://fdnd-agency.directus.app/assets/{{radiostation.logo}}" alt="">
+        </a>
+    </li>
+</ul>
+
+{% endfor %}
+
+{% render 'partials/foot.liquid'%}

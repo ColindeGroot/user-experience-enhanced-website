@@ -1,0 +1,9 @@
+<h1>login</h1>
+<form method="post" action="/login" class="primary-tekst">
+    <label>Vul hier je naam in
+        <input type="text" name="naam" class="glass" {% if inputName %}value="{{ inputName }}" {% endif %}
+            placeholder="Bijv. {{randomPerson}}">
+    </label>
+    <span class="error-message">{{ error }}</span>
+    <button class="filter-link" type="submit">submit</button>
+</form>

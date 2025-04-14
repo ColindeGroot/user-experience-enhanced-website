@@ -1,0 +1,144 @@
+{% render 'partials/head.liquid' %}
+
+<main>
+  <h1>{{ station.name }}</h1>
+  <p>Welkom bij {{ station.name }}</p>
+
+
+  <!-- Kalender: lijst met maandag t/m zaterdag -->
+  <ul class="week-calendar">
+    {% for item in weekDays %}
+    <li class="{% if item.day == selectedDay %}active{% endif %}">
+      <a href="?day={{ item.day }}" aria-label="filter show op dag">{{ item.day | capitalize }} {{ item.dayNumber }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+
+
+  <h2>Het programma van vandaag:</h2>
+
+  <div class="schedule-container">
+    <table class="schedule">
+      <thead>
+        <tr>
+          {% for label in timeSlots %}
+          <th>{{ label }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {% assign currentSlot = 0 %}
+          {% assign sortedShows = shows | sort: "slotStart" %}
+
+          {% for show in sortedShows %}
+
+          {% if currentSlot < show.slotStart %} {% assign gap=show.slotStart | minus: currentSlot %} <td
+            colspan="{{ gap }}">
+            </td>
+            {% assign currentSlot = show.slotStart %}
+            {% endif %}
+
+            <td colspan="{{ show.colspan }}" class="show-cell">
+
+              <h3 class="show-title">{{ show.title }}</h3>
+              <span class="show-time">{{ show.from }} - {{ show.until }}</span>
+              <p class="show-info">{{ show.body | truncate: 50 }}</p>
+
+              {% if show.userAvatar %}
+              <img class="show-image" src="https://fdnd-agency.directus.app/assets/{{ show.userAvatar }}" alt="Avatar">
+              {% endif %}
+              {% assign showId = show.id | string | strip %}
+
+              {% if likes contains showId %}
+              {% comment %} /radio/:stationName/show/:id/unlike {% endcomment %}
+              <form action="/radio/{{ station.name | replace: " ", "%20" }}/show/{{ show.id }}/unlike" method="post">
+                <button class="post-button" type="submit" value="Unlike">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 30 30" fill="none">
+                    <title>unlike heart</title>
+                    <path
+                      d="M9.5 3.68463C8.53077 2.06925 6.91538 0.938477 4.97692 0.938477C2.23077 0.938477 0.130768 3.03848 0.130768 5.78463C0.130768 11.1154 3.03846 11.9231 9.5 18.0616C15.9615 11.9231 18.8692 11.1154 18.8692 5.78463C18.8692 3.03848 16.7692 0.938477 14.0231 0.938477C12.0846 0.938477 10.4692 2.06925 9.5 3.68463Z"
+                      fill="#FE0170" />
+                  </svg>
+                  <button>
+              </form>
+
+              {% else %}
+
+              <form action="/radio/{{ station.name | replace: " ", "%20" }}/show/{{ show.id }}/like" method="post">
+                <button class="post-button" type="submit" value="Like">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 30 30" fill="none">
+                    <title>like heart</title>
+                    <path
+                      d="M9.5 3.68463C8.53077 2.06925 6.91538 0.938477 4.97692 0.938477C2.23077 0.938477 0.130768 3.03848 0.130768 5.78463C0.130768 11.1154 3.03846 11.9231 9.5 18.0616C15.9615 11.9231 18.8692 11.1154 18.8692 5.78463C18.8692 3.03848 16.7692 0.938477 14.0231 0.938477C12.0846 0.938477 10.4692 2.06925 9.5 3.68463Z"
+                      fill="#fff" stroke="#646464" stroke-width="1px" />
+                  </svg>
+                  <button>
+              </form>
+
+              {% endif %}
+
+            </td>
+
+            {% assign currentSlot = currentSlot | plus: show.colspan %}
+            {% endfor %}
+            <td hidden></td>
+
+            {% if currentSlot < totalSlots %} {% assign gap=totalSlots | minus: currentSlot %} <td colspan="{{ gap }}">
+              </td>
+              {% endif %}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<script type="module">
+  // https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Testing/Feature_detection
+  if ('fetch' in window && 'DOMParser' in window) {
+
+    document.addEventListener('submit', async function (event) {
+
+      const form = event.target
+
+      // Data attributen mag je zelf verzinnen; dit is dus niet iets speciaals
+      if (!form.hasAttribute('liken')) {
+        return
+      }
+
+      // Voorkom de standaard submit van de browser
+      // Let op: hiermee overschrijven we de default Loading state van de browser...
+      event.preventDefault()
+
+      // Doe een fetch naar de server, net als hoe de browser dit normaal zou doen
+      // Gebruik daarvoor het action en method attribuut van het originele formulier
+      // Inclusief alle formulierelementen
+      const response = await fetch(form.action, {
+        method: form.method,
+        body: new URLSearchParams(new FormData(form))
+      })
+
+      // De server redirect op de normale manier, en geeft HTML terug
+      // (De server weet niet eens dat deze fetch via client-side JavaScript gebeurde)
+      const responseText = await response.text()
+
+      // Normaal zou de browser die HTML parsen en weergeven, maar daar moeten we nu zelf iets mee
+      // Parse de nieuwe HTML en maak hiervan een nieuw Document Object Model in het geheugen
+      const parser = new DOMParser()
+      const responseDOM = parser.parseFromString(responseText, 'text/html')
+
+      // Zoek in die nieuwe DOM onze nieuwe state op, die we via Liquid hebben klaargemaakt
+      // We gebruiken hiervoor het data-enhanced attribuut, zodat we weten waar we naar moeten zoeken
+      // (Hierdoor kunnen we ook meerdere formulieren op dezelfde pagina gebruiken)
+      const newState = responseDOM.querySelector('[data-enhanced="' + form.getAttribute('data-enhanced') + '"]')
+
+      // Overschrijf ons formulier met de nieuwe HTML
+      // Hier wil je waarschijnlijk de Loading state vervangen door een Success state
+      form.outerHTML = newState.outerHTML
+
+    })
+  }
+
+</script>
+
+{% render 'partials/foot.liquid' %}
