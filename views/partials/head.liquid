@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <script src="/scripts/script.js" defer></script>
     <title>Mediahuis EPG</title>
 </head>
+
 <body>
     <nav class="navigation">
 
@@ -14,18 +16,28 @@
             <svg viewBox="0 0 150 120" width="40" height="40">
                 <title>Hamburger menu</title>
                 <rect width="100" height="20"></rect>
-                <rect y="30" width="100" height="20" ></rect>
-                <rect y="60" width="100" height="20" ></rect>
+                <rect y="30" width="100" height="20"></rect>
+                <rect y="60" width="100" height="20"></rect>
             </svg>
         </button>
 
-        <img src="/assets/radio-{{ thisstation }}.png" alt="{{ thisstation }}">
-
-
         <ul>
-            <li><a href="/index.html"></a>Home</li>
+            <li><a href="views/index/liquid"></a>Home</li>
             <li><a href="/"></a>Radio</li>
             <li><a href="/"></a>Ontdekken</li>
         </ul>
 
     </nav>
+
+    {% comment %} <aside class="sidemenu" id="sidemenu" aria-labelledby="menu-toggle">
+        <ul class="radiopicker">
+            {% for radiostation in radiostations %}
+            <li class="station-item">
+                <a href="/radio/{{ radiostation.name | url_encode | replace: '+', '%20' }}">
+                    <img src="https://fdnd-agency.directus.app/assets/{{radiostation.logo}}"
+                        alt="{{ radiostation.name }} logo">
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </aside> {% endcomment %}

@@ -1,7 +1,19 @@
 {% render 'partials/head.liquid' %}
 
+{% comment %} <aside class="sidemenu" id="sidemenu" aria-labelledby="menu-toggle">
+  <ul class="radiopicker">
+    {% for radiostation in radiostations %}
+    <li class="station-item">
+      <a href="/radio/{{ radiostation.name | url_encode | replace: '+', '%20' }}">
+        <img src="https://fdnd-agency.directus.app/assets/{{radiostation.logo}}" alt="{{ radiostation.name }} logo">
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</aside>  {% endcomment %}
+
 <main>
-  <h1>{{ station.name }}</h1>
+  <h1 class="radio-title" style="view-transition-name: radio-{{ station.id }}">{{ station.name }}</h1>
   <p>Welkom bij {{ station.name }}</p>
 
 
@@ -13,7 +25,6 @@
     </li>
     {% endfor %}
   </ul>
-
 
   <h2>Het programma van vandaag:</h2>
 
@@ -46,7 +57,9 @@
               <p class="show-info">{{ show.body | truncate: 50 }}</p>
 
               {% if show.userAvatar %}
-              <img class="show-image" src="https://fdnd-agency.directus.app/assets/{{ show.userAvatar }}" alt="Avatar">
+              <img class="show-image" src="https://fdnd-agency.directus.app/assets/{{ show.userAvatar }}"
+                height="https://fdnd-agency.directus.app/assets/{{ show.height }}" width="{{ show.width }}"
+                alt="Avatar">
               {% endif %}
               {% assign showId = show.id | string | strip %}
 

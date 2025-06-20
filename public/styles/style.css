@@ -11,7 +11,22 @@ body {
 
     background-color: var(--background-white);
     font-family: Arial, Helvetica, sans-serif;
+  
 }
+
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-group(.title) {
+    animation-duration: 0.2s;
+}
+
+::view-transition-group(.showlist) {
+    animation-duration: 0.2s;
+}
+
+
 
 
 /* algemene styling */
@@ -39,12 +54,17 @@ td {
     box-sizing: content-box;
 }
 
+main {
+    margin: 0 3vw;
+    position: relative;
+}
 
 
 /* partials  */
 
 .navigation {
     display: flex;
+    align-items: center;
     background-color: var(--veronica-blue);
     color: var(--white);
     font-size: 18px;
@@ -53,25 +73,52 @@ td {
     ul {
         display: flex;
         gap: 1em;
+
+        li{
+            cursor: pointer;
+        }
+
     }
 }
 
 /* home */
+
+/* radio name animatie */
+.radio-name {
+    view-transition-class: title;
+}
+
+
 .radiostations {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
     margin-left: 3em;
-    background-color: var(--background-white);
-    width: 30rem;
+    gap: 1em;
 
     .station-item {
-        margin: 1em 0;
+        padding: 0 0.5em;
+        margin: auto;
+        text-align: center;
+        background-color: var(--background-white);
+        border-radius: 5px;
 
-        img {
-            width: 12rem;
-            aspect-ratio: 3/1;
-            object-fit: contain;
+        a {
+            text-decoration: none;
+            color: #000;
+
+            img {
+                width: 12rem;
+                aspect-ratio: 3/1;
+                object-fit: contain;
+            }
         }
+
+
     }
 }
+
 
 
 /* radiopagina */
@@ -87,15 +134,27 @@ td {
     background-color: rgba(0, 0, 0, 0.5);
 } */
 
+.sidemenu{
+    width: 20vw;
+    position: absolute;
+    height: 100vh;
+    background-color: var(--white);
+    z-index: 999;
 
-main {
-    margin: 0 3vw;
+    img{
+        width: 100%;
+        height: auto;
+    }
+}
+
+.radio-title {
+    view-transition-class: title;
+    width: fit-content;
 }
 
 /* filter */
 .week-calendar {
     margin: 10vh 0;
-
     width: 300px;
     display: flex;
     flex-flow: row nowrap;
@@ -131,6 +190,7 @@ main {
 }
 
 .schedule-container {
+    view-transition-class: showlist;
     max-width: 100%;
     margin-bottom: 1rem;
 
